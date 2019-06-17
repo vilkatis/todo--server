@@ -1,11 +1,11 @@
-import { AbstractRepository } from './AbstractRepository';
+import { AbstractRepository } from '../AbstractRepository';
+import { MongoDb } from './MongoDb';
 import { Collection, InsertOneWriteOpResult } from 'mongodb';
-import { Database } from './mongodb';
 
 export abstract class MongoDbRepository<T> extends AbstractRepository<T> {
   private readonly _collection: Collection<T>;
 
-  protected constructor(database: Database, collectionName: string) {
+  protected constructor(database: MongoDb, collectionName: string) {
     super();
     this._collection = database.getCollection<T>(collectionName);
   }

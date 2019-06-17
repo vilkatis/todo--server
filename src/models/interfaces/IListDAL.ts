@@ -1,3 +1,5 @@
 export interface IListDAL {
-  _id: string;
+  _id?: string;
+  userId: string;
+  name: string;
 }

@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { BadRequestError } from 'routing-controllers';
 import { IToken, ITokenData, IUserDAL } from '../models';
 import { Utils } from '../helpers';
-import { UsersRepository } from '../database/UsersRepository';
+import { UsersRepository } from '../database';
 
 @Service()
 export class UserService {
@@ -15,7 +15,7 @@ export class UserService {
     if (await this.userRepository.findOne({username})) throw new BadRequestError('Username already exists.');
     const encryptedPassword: string = bcrypt.hashSync(password, parseInt(process.env.BCRYPT_SALT_ROUNDS, 10));
     const userId: string = await this.userRepository.create({username, encryptedPassword});
-    return this.createToken(userId);
+    return this._createToken(userId);
   }
 
   async login({username, password}: any) {
@@ -23,10 +23,10 @@ export class UserService {
     const dbUser: IUserDAL = await this.userRepository.findOne({username});
     if (!dbUser) throw new BadRequestError('Incorrect user or password.');
     if (!await bcrypt.compare(password, dbUser.encryptedPassword)) throw new BadRequestError('Incorrect user or password.');
-    return this.createToken(dbUser);
+    return this._createToken(dbUser._id);
   }
 
-  private createToken(_id: string): IToken {
+  private _createToken(_id: string): IToken {
     const expiresIn = 60 * 60;
     const secret: string = Utils.getSecret('private_key');
     const dataStoredInToken: ITokenData = {_id};

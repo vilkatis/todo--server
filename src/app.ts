@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Action, createExpressServer, UnauthorizedError, useContainer } from 'routing-controllers';
 import { Utils } from './helpers';
 import { controllers } from './controllers';
-import { Database } from './database/mongodb';
+import { MongoDb } from './database/mongodb/MongoDb';
 import { middlewares } from './middlewares';
 import * as jwt from 'jsonwebtoken';
 
@@ -29,7 +29,7 @@ const app = createExpressServer({
 
 app.listen(3000, async () => {
   try {
-    await Database.connect();
+    await MongoDb.connect();
     console.log('Connected to DB');
   } catch (err) {
     console.error('Unable to connect to DB', err);

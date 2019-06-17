@@ -1,11 +1,11 @@
 import { MongoDbRepository } from './MongoDbRepository';
-import { IListDAL } from '../models';
+import { IListDAL } from '../../models';
 import { Service } from 'typedi';
-import { Database } from './mongodb';
+import { MongoDb } from './MongoDb';
 
 @Service()
 export class ListsRepository extends MongoDbRepository<IListDAL> {
-  constructor(private database: Database) {
-    super(database, 'lists');
+  constructor(private _database: MongoDb) {
+    super(_database, 'lists');
   }
 }
