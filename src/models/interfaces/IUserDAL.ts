@@ -1,5 +1,5 @@
-export interface IUserDB {
-  _id: string;
+export interface IUserDAL {
+  _id?: string;
   username: string;
   encryptedPassword: string;
 }
