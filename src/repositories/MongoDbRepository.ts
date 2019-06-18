@@ -1,12 +1,18 @@
-import { AbstractRepository } from './AbstractRepository';
-import { Collection, Db, InsertOneWriteOpResult } from 'mongodb';
+import {
+  Collection,
+  Db,
+  FilterQuery,
+  InsertOneWriteOpResult,
+  ObjectId,
+  UpdateQuery,
+  UpdateWriteOpResult
+} from 'mongodb';
 import { Container } from 'typedi';
 
-export abstract class MongoDbRepository<T> extends AbstractRepository<T> {
+export abstract class MongoDbRepository<T> {
   private readonly _collection: Collection<T>;
 
   protected constructor(collectionName: string) {
-    super();
     const db: Db = Container.get(Db);
     this._collection = db.collection<T>(collectionName);
   }
@@ -20,8 +26,14 @@ export abstract class MongoDbRepository<T> extends AbstractRepository<T> {
     throw new Error('Method not implemented.');
   }
 
-  find(item: Partial<T>): Promise<T[]> {
-    return this._collection.find(item).toArray();
+  async find(item: Partial<T>): Promise<T[]> {
+    const list: T[] = await this._collection.find(item).toArray();
+    return list.map((item: any) => {
+      return {
+        ...item,
+        _id: item._id.toHexString()
+      };
+    });
   }
 
   findOne(item: Partial<T>): Promise<T> {
@@ -32,7 +44,9 @@ export abstract class MongoDbRepository<T> extends AbstractRepository<T> {
     throw new Error('Method not implemented.');
   }
 
-  update(id: string, item: T): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async updateOne(id: string, updateQuery: UpdateQuery<T>): Promise<boolean> {
+    const filterQuery: FilterQuery<T> = {_id: new ObjectId(id)};
+    const result: UpdateWriteOpResult = await this._collection.updateOne(filterQuery, updateQuery);
+    return !!result.result.ok;
   }
 }
