@@ -6,6 +6,8 @@ import { promisify } from 'util';
 export class Redis {
   getAsync: (key: string) => Promise<string>;
   setAsync: (key: string, value: string) => Promise<void>;
+  delAsync: (key: string) => Promise<boolean>;
+
   set: any;
 
   constructor() {
@@ -15,5 +17,6 @@ export class Redis {
     this.getAsync = promisify(client.get).bind(client);
     this.setAsync = promisify(client.set).bind(client);
     this.set = client.set.bind(client);
+    this.delAsync = promisify(client.del.bind(client));
   }
 }
