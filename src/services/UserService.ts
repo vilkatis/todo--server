@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { BadRequestError } from 'routing-controllers';
 import { IToken, ITokenData, IUserDAL } from '../models';
 import { Utils } from '../helpers';
-import { UsersRepository } from '../database';
+import { UsersRepository } from '../repositories';
 
 @Service()
 export class UserService {

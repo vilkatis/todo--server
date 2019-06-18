@@ -1,10 +1,10 @@
-import { TodoController } from './TodoController';
+import { ListsController } from './ListsController';
 import { UserController } from './UserController';
 
 export const controllers: any[] = [
-  TodoController,
+  ListsController,
   UserController
 ];
 
-export * from './TodoController';
+export * from './ListsController';
 export * from './UserController';
