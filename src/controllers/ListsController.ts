@@ -4,7 +4,7 @@ import { ListsService } from '../services/ListsService';
 import { IListDAL } from '../models/interfaces';
 
 
-@JsonController()
+@JsonController('/todo')
 export class ListsController {
   @Inject() private _service: ListsService;
 
