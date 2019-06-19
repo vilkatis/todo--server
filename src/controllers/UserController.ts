@@ -1,19 +1,21 @@
-import { Body, JsonController, Post } from 'routing-controllers';
+import { BadRequestError, Body, JsonController, Post } from 'routing-controllers';
 import { Inject } from 'typedi';
-import { UserService } from '../services/UserService';
-import { IToken } from '../models';
+import { UserService } from '../providers';
+import { IToken, IUser } from '../models';
 
 @JsonController('/auth')
 export class UserController {
   @Inject() private _service: UserService;
 
   @Post('/login')
-  async login(@Body() loginRequest: any): Promise<IToken> {
-    return this._service.login(loginRequest);
+  async login(@Body() user: IUser): Promise<IToken> {
+    if (!user || !user.username || !user.password) throw new BadRequestError('Missing username / password.');
+    return this._service.login(user);
   }
 
   @Post('/register')
-  async register(@Body() registerRequest: any): Promise<IToken> {
-    return this._service.register(registerRequest);
+  async register(@Body() user: IUser): Promise<IToken> {
+    if (!user || !user.username || !user.password) throw new BadRequestError('Missing username / password.');
+    return this._service.register(user);
   }
 }
