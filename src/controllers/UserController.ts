@@ -3,7 +3,7 @@ import { Inject } from 'typedi';
 import { UserService } from '../services/UserService';
 import { IToken } from '../models';
 
-@JsonController()
+@JsonController('/auth')
 export class UserController {
   @Inject() private _service: UserService;
 
