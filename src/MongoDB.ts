@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { CollectionCreateOptions, Db, MongoClient, MongoClientOptions } from 'mongodb';
 import { Container } from 'typedi';
 import { InternalServerError } from 'routing-controllers';
@@ -19,7 +20,7 @@ export class MongoDB {
     try {
       const client: MongoClient = await MongoClient.connect(process.env.DATABASE_URI, MongoDB.options);
       const db: Db = client.db();
-      Container.set(Db, db);
+      Container.set(Db, client.db());
       return db;
     } catch (err) {
       throw new InternalServerError('Unable to connect to DB');

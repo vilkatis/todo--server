@@ -1,13 +1,14 @@
+import 'reflect-metadata';
 import { IDataMapper, IList, IListDAL, ITask } from '../../models';
 import { Inject, Service } from 'typedi';
 import { TaskDataMapper } from './TaskDataMapper';
 
 @Service()
 export class ListDataMapper implements IDataMapper<IList, IListDAL> {
-  @Inject() taskDataMapper: TaskDataMapper;
+  @Inject() private taskDataMapper: TaskDataMapper;
 
   toDalEntity(entity: IList): IListDAL {
-    return undefined;
+    throw new Error('Not implemented');
   }
 
   toEntity(dalEntity: IListDAL): IList {

@@ -2,7 +2,7 @@ import { Inject, Service } from 'typedi';
 import { ListsRepository } from '../repositories';
 import { InternalServerError } from 'routing-controllers';
 import { IList, IListDAL, ITask } from '../../models';
-import { Redis } from '../../Redis';
+import { RedisService } from './RedisService';
 import { ObjectId } from 'bson';
 import { ListDataMapper } from '../data-mappers';
 
@@ -10,7 +10,7 @@ import { ListDataMapper } from '../data-mappers';
 export class ListsService {
   @Inject() private _listsRepository: ListsRepository;
   @Inject() private _dataMapper: ListDataMapper;
-  @Inject() private _redis: Redis;
+  @Inject() private _redis: RedisService;
 
   async getLists(userId: string): Promise<IList[]> {
     const key = `${userId}:lists`;

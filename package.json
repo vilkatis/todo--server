@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "tsc",
     "start": "node ./dist/app.js",
     "start:dev": "tsc-watch --onSuccess \"npm start\""
   },

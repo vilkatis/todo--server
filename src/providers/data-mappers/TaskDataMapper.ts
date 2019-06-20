@@ -1,6 +1,6 @@
+import { Service } from 'typedi';
 import { IDataMapper, ITask, ITaskDAL } from '../../models';
 import { ObjectId } from 'bson';
-import { Service } from 'typedi';
 
 @Service()
 export class TaskDataMapper implements IDataMapper<ITask, ITaskDAL> {

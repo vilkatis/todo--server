@@ -1,7 +1,10 @@
 import { CorsMiddleware } from './CorsMiddleware';
+import { ErrorMiddleware } from './ErrorMiddleware';
 
 export const middlewares: any[] = [
-  CorsMiddleware
+  CorsMiddleware,
+  // ErrorMiddleware
 ];
 
 export * from './CorsMiddleware';
+// export * from './ErrorMiddleware';

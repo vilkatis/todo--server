@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { ExpressMiddlewareInterface, Middleware } from 'routing-controllers';
+import { ExpressMiddlewareInterface, ForbiddenError, Middleware } from 'routing-controllers';
 import * as cors from 'cors';
 import { CorsOptions } from 'cors';
 
@@ -15,7 +15,7 @@ export class CorsMiddleware implements ExpressMiddlewareInterface {
         if (whiteList.indexOf(origin) !== -1) {
           callback(null, true)
         } else {
-          callback(new Error('Not allowed by CORS'))
+          callback(new ForbiddenError('Not allowed by CORS'))
         }
       }
     }
