@@ -16,7 +16,7 @@ Utils.calculateIdealSaltRounds(parseInt(process.env.BCRYPT_SALT_ROUNDS, 10));
 
 const app = createExpressServer({
   routePrefix: '/v1',
-  // defaultErrorHandler: false,
+  defaultErrorHandler: false,
   currentUserChecker: async (action: Action) => {
     try {
       const token: string = action.request.headers['authorization'].split(' ')[1];

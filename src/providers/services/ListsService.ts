@@ -1,15 +1,14 @@
 import { Inject, Service } from 'typedi';
 import { ListsRepository } from '../repositories';
 import { InternalServerError } from 'routing-controllers';
-import { IList, IListDAL, ITask } from '../../models';
+import { IList, IListDAL, ITask, ITaskDAL } from '../../models';
 import { RedisService } from './RedisService';
 import { ObjectId } from 'bson';
-import { ListDataMapper } from '../data-mappers';
+import { TodoDataMapper } from '../../helpers';
 
 @Service()
 export class ListsService {
   @Inject() private _listsRepository: ListsRepository;
-  @Inject() private _dataMapper: ListDataMapper;
   @Inject() private _redis: RedisService;
 
   async getLists(userId: string): Promise<IList[]> {
@@ -17,7 +16,7 @@ export class ListsService {
     let redisLists: string = await this._redis.getAsync(key);
     if (redisLists) return JSON.parse(redisLists);
     const listsDAL: IListDAL[] = await this._listsRepository.find({userId});
-    const lists: IList[] = listsDAL.map(this._dataMapper.toEntity);
+    const lists: IList[] = listsDAL.map(TodoDataMapper.listToEntity);
     await this._redis.setAsync(key, JSON.stringify(lists));
     return lists;
   }
@@ -40,7 +39,7 @@ export class ListsService {
     return result;
   }
 
-  async addTask(listId: string, userId: string, taskName: string): Promise<string> {
+  async addTask(userId: string, listId: string, taskName: string): Promise<string> {
     const _id: ObjectId = new ObjectId();
     const dbKey: string = `tasks.${_id.toHexString()}`;
     const key = `${userId}:lists`;
@@ -61,12 +60,13 @@ export class ListsService {
     }
   }
 
-  async updateTask(listId: string, userId: string, task: ITask): Promise<boolean> {
+  async updateTask(userId: string, listId: string, task: ITask): Promise<boolean> {
     const dbKey = `tasks.${task.id}`;
     const key = `${userId}:lists`;
     const result: boolean = await this._listsRepository.updateOne(listId, {
       $set: {
         [dbKey]: {
+          _id: new ObjectId(task.id),
           name: task.name,
           isCompleted: task.isCompleted
         }
@@ -94,5 +94,23 @@ export class ListsService {
     } else {
       throw new InternalServerError('Failed to delete task.');
     }
+  }
+
+  async deleteCompletedTasks(userId: string, listId: string): Promise<string[]> {
+    const list: IListDAL = await this._listsRepository.findOneById(listId);
+    const key = `${userId}:lists`;
+    const completedTaskIds: string[] = Object.values(list.tasks).filter((task: ITaskDAL) => task.isCompleted).map((task: ITaskDAL) => task._id.toHexString());
+    if (!completedTaskIds) return [];
+    const completedTasks: Record<string, 1> = completedTaskIds.reduce((dictionary: Record<string, 1>, taskId: string) => {
+      dictionary[`tasks.${taskId}`] = 1;
+      return dictionary;
+    }, {});
+    await this._listsRepository.updateOne(listId, {
+      $unset: {
+        ...completedTasks
+      }
+    });
+    await this._redis.delAsync(key);
+    return completedTaskIds;
   }
 }

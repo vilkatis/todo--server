@@ -47,12 +47,27 @@ export abstract class MongoDbRepository<T> {
     }
   }
 
+  async findOneById(id: string): Promise<T> {
+    const filterQuery: FilterQuery<T> = {_id: new ObjectId(id)};
+    let item: T;
+    try {
+      item = await this._collection.findOne(filterQuery);
+    } catch (err) {
+      throw new InternalServerError('Db: Failed to perform query.');
+    }
+    if (item) {
+      return item;
+    } else {
+      throw new NotFoundError('Db: No record found.')
+    }
+  }
+
   async updateOne(id: string, updateQuery: UpdateQuery<T>): Promise<boolean> {
     try {
       const filterQuery: FilterQuery<T> = {_id: new ObjectId(id)};
       const result: UpdateWriteOpResult = await this._collection.updateOne(filterQuery, updateQuery);
       return !!result.result.ok;
-    } catch {
+    } catch (err) {
       throw new InternalServerError('Db: Failed to perform update.');
     }
   }

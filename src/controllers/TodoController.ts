@@ -27,16 +27,23 @@ export class TodoController {
 
   @Post('/lists/:id/task')
   public addTask(@CurrentUser({required: true}) userId: string, @Param('id') listId: string, @Body() task: ITask): Promise<string> {
-    return this._service.addTask(listId, userId, task.name);
+    if (!task || !task.name) throw new BadRequestError('Missing task object / task name');
+    return this._service.addTask(userId, listId, task.name);
   }
 
   @Put('/lists/:id/task')
-  public updateTask(@CurrentUser({required: true}) userId: string, @Param('id') listId: string, @Body() list: any): Promise<boolean> {
-    return this._service.updateTask(listId, userId, list);
+  public updateTask(@CurrentUser({required: true}) userId: string, @Param('id') listId: string, @Body() task: ITask): Promise<boolean> {
+    if (!task || !task.id) throw new BadRequestError('Missing task object / task id');
+    return this._service.updateTask(userId, listId, task);
   }
 
-  @Delete('/lists/:id/task')
-  public deleteTask(@CurrentUser({required: true}) userId: string, @Param('id') listId: string, @Body() task: any): Promise<boolean> {
-    return this._service.deleteTask(userId, listId, task._id);
+  @Delete('/lists/:listId/task/:taskId')
+  public deleteTask(@CurrentUser({required: true}) userId: string, @Param('listId') listId: string, @Param('taskId') taskId: string): Promise<boolean> {
+    return this._service.deleteTask(userId, listId, taskId);
+  }
+
+  @Delete('/lists/:listId/tasks/completed')
+  public deleteCompleted(@CurrentUser({required: true}) userId: string, @Param('listId') listId: string): Promise<string[]> {
+    return this._service.deleteCompletedTasks(userId, listId);
   }
 }

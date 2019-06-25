@@ -1,4 +1,3 @@
-export * from './IDataMapper';
 export * from './IList';
 export * from './IListDAL';
 export * from './ILoginRequest';
